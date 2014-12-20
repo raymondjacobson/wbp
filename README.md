@@ -1,5 +1,5 @@
 #White Blank Page
 
-A tool to help you collect quick thoughts, ideas, and forget the interface altogether
+Fuck accounts, fuck user interfaces. You have things to do and ideas buzzing around, put them down, get on with your life.
 
 stack: mongodb, react, go
