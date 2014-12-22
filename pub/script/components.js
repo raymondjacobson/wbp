@@ -6,21 +6,23 @@
 var TextArea = React.createClass({
 
   // Data Handling functions
-  // Fetch data (on initia)
-  getTextAreaContent: function () {
+  // Fetch data (on initial load)
+  getTextAreaContent: function() {
     var fetch_url = this.props.url + "fetch/";
     $.ajax({
       url: fetch_url,
       dataType: 'json',
       success: function(data) {
-        this.setState({data:data});
+        console.log(data[0].text);
+        this.setState({data: data[0].text});
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
-      }.bind(this),
+      }.bind(this)
     });
   },
-  // Edit data (via polling TODO: complicated based on typing ratio)
+  // Edit data (via polling)
+  // TODO: complicated based on typing rate (or something)
   saveTextAreaContent: function () {
     var edit_url = this.props.url + "edit/";
     $.ajax({
@@ -29,7 +31,7 @@ var TextArea = React.createClass({
       type: 'POST',
       data: 'f'/* GET TEXT AREA TEXT */,
       success: function(data) {
-        this.setState({data: data});
+        console.log(data);
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -37,8 +39,7 @@ var TextArea = React.createClass({
     });
   },
   getInitialState: function() {
-    // this.getTextAreaContent();
-    return {data: "dicjs"};
+    return {data: ""};
   },
   componentDidMount: function() {
     this.getTextAreaContent();
@@ -50,7 +51,10 @@ var TextArea = React.createClass({
     textarea
       .focus()
       .val("")
-      .val(val)
+      .val(val);
+  },
+  handleChange: function(event) {
+    this.setState({data: event.target.value});
   },
 
   // TODO: Keypress handlers
@@ -58,10 +62,9 @@ var TextArea = React.createClass({
   // Render the text area, reactive data
   render: function() {
     return (
-      <textarea id="main">
-        {this.state.data}
+      <textarea id="main" value={this.state.data} onChange={this.handleChange}>
       </textarea>
-    )
+    );
   }
 });
 
