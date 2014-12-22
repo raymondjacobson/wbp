@@ -4,6 +4,9 @@
  */
 
 var TextArea = React.createClass({
+
+  // Data Handling functions
+  // Fetch data (on initia)
   getTextAreaContent: function () {
     var fetch_url = this.props.url + "fetch/";
     $.ajax({
@@ -17,6 +20,7 @@ var TextArea = React.createClass({
       }.bind(this),
     });
   },
+  // Edit data (via polling TODO: complicated based on typing ratio)
   saveTextAreaContent: function () {
     var edit_url = this.props.url + "edit/";
     $.ajax({
@@ -33,19 +37,31 @@ var TextArea = React.createClass({
     });
   },
   getInitialState: function() {
-    return {data: []};
+    // this.getTextAreaContent();
+    return {data: "dicjs"};
   },
   componentDidMount: function() {
     this.getTextAreaContent();
     setInterval(this.saveTextAreaContent, this.props.savePollInterval);
+    // Put the cursor at the end of the textarea
+    // TODO: Better way to do this?
+    var textarea = $("#main"),
+        val = textarea.val();
+    textarea
+      .focus()
+      .val("")
+      .val(val)
   },
+
+  // TODO: Keypress handlers
+
+  // Render the text area, reactive data
   render: function() {
-    console.log(typeof this.state.data[1]);
-    if (typeof (this.state.data[1]) != undefined) {
-      return (
-        <h1>{this.state.data[1]}</h1>
-      )
-    }
+    return (
+      <textarea id="main">
+        {this.state.data}
+      </textarea>
+    )
   }
 });
 

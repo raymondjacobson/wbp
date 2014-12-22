@@ -1,0 +1,18 @@
+/**
+ * White Blank Page
+ * Raymond Jacobson 2014
+ */
+body {
+  font-family: 'Inconsolata';
+  font-size: 13px;
+}
+textarea#main {
+  height: 100%;
+  width: 100%;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  resize: none;
+  overflow: auto;
+  padding: 2%;
+}
