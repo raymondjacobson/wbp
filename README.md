@@ -7,8 +7,8 @@ stack: mongodb, react, go
 ## Up & Running
 ```bash
 
-  stylus -w pub/style # compile css
-  watchify components.js -o bundle.js # browserify js
-  go run server.go
+  $ stylus -w pub/style # compile css
+  $ watchify components.js -o bundle.js # browserify js
+  $ go run server.go
 
 ```

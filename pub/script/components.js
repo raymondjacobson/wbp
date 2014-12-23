@@ -5,9 +5,7 @@
  */
 
 //TODO Switch to non browser JSX transform before production
-var auth_cookie = require("./auth_cookie.js");
-
-var auth_cookie_name = "wbp-cookie-auth";
+var auth_cookie = require("./auth.js");
 
 // React object for main text area on page
 var TextArea = React.createClass({
@@ -30,8 +28,8 @@ var TextArea = React.createClass({
   },
   // Edit data (via polling)
   // TODO: complicated based on typing rate (or something)
-  saveTextAreaContent: function () {
-    var edit_url = this.props.url + "edit/";
+  saveTextAreaContent: function (key) {
+    var edit_url = this.props.url + key + "/edit/";
     $.ajax({
       url: edit_url,
       dataType: 'json',
