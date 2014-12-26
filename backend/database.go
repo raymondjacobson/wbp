@@ -55,8 +55,9 @@ func UpdatePage(c *mgo.Collection, key string, content string) {
 func GetPage(c *mgo.Collection, key string) string {
   current_user := User{}
   err := c.Find(bson.M{"key": key}).One(&current_user)
-  if err != nil {
-    log.Fatal(err)
+  if err != nil { // TODO: Should be a better err check
+    UpdatePage(c, key, "")
+    return ""
   }
   fmt.Println(key + " fetched")
   return current_user.Content
