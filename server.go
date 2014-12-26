@@ -7,8 +7,6 @@
 package main
 
 import (
-  // "encoding/json"
-  "fmt"
   "github.com/julienschmidt/httprouter"
   "gopkg.in/mgo.v2"
   "io/ioutil"
@@ -32,9 +30,7 @@ func FetchPage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
   w.Header().Set("Content-Type", "application/json")
   // TODO
   auth_key := ps.ByName("key")
-  fmt.Println(auth_key)
   content_string := backend.GetPage(db_coll, auth_key)
-  fmt.Println(content_string)
   w.Write([]byte(content_string))
 }
 
@@ -44,10 +40,8 @@ func EditPage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
   w.Header().Set("Content-Type", "application/json")
   // TODO
   auth_key := ps.ByName("key")
-  fmt.Println(auth_key)
   body, _ := ioutil.ReadAll(r.Body)
   page_string := string(body)
-  fmt.Println(page_string)
   backend.UpdatePage(db_coll, auth_key, page_string)
   http.ServeFile(w, r, "sample.json")
 }
@@ -55,7 +49,6 @@ func EditPage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 func main() {
   server_port := ":3000"
   db_coll = backend.DatabaseConnect("localhost:27017", "wbp", "pages")
-  fmt.Println(db_coll)
   router := httprouter.New()
 
   // Serve static assets

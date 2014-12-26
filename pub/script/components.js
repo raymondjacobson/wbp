@@ -52,12 +52,11 @@ var TextArea = React.createClass({
   // If the component has properly mounted, retrieve a auth key
   componentDidMount: function() {
     var key = auth_cookie.getAuthKey();
-    console.log(key);
     this.getTextAreaContent(key);
     var saveTAC = this.saveTextAreaContent;
-    // setInterval(function() {
-    //     saveTAC(key)
-    //   }, this.props.savePollInterval);
+    setInterval(function() {
+        saveTAC(key)
+      }, this.props.savePollInterval);
     // Put the cursor at the end of the textarea
     // TODO: Better way to do this?
     var textarea = $("#main"),

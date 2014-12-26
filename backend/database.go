@@ -38,17 +38,17 @@ func DatabaseConnect(server_url string, database_name string, collection_name st
   if err != nil {
     panic(err)
   }
-  fmt.Println("db connect")
+  fmt.Println("Connected to " + database_name + "." + collection_name)
   return c
 }
 
-// Run an insert with the provided key and content
+// Run an upsert with the provided key and content
 func UpdatePage(c *mgo.Collection, key string, content string) {
-  err := c.Insert(&User{key, content})
+  _, err := c.Upsert(bson.M{"key": key}, bson.M{"key": key, "content": content})
   if err != nil {
     log.Fatal(err)
   }
-  fmt.Println("page updated")
+  fmt.Println(key + " updated")
 }
 
 // Retrieve & 
@@ -58,6 +58,6 @@ func GetPage(c *mgo.Collection, key string) string {
   if err != nil {
     log.Fatal(err)
   }
-  fmt.Println("got page")
+  fmt.Println(key + " fetched")
   return current_user.Content
 }
