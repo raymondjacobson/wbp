@@ -49,10 +49,10 @@ var TextArea = React.createClass({
   getInitialState: function() {
     return {data: ""};
   },
-  // TODO
+
   // If the component has properly mounted, retrieve a auth key
   componentDidMount: function() {
-    var key = auth_cookie.getAuthKey();
+    var key = auth_cookie.getSetAuthKey();
     this.getTextAreaContent(key);
     // Poll for update to text area content
     var getTAC = this.getTextAreaContent;
@@ -70,7 +70,7 @@ var TextArea = React.createClass({
   },
   handleChange: function(event) {
     this.setState({data: event});
-    var key = auth_cookie.getAuthKey();
+    var key = auth_cookie.getAuthCookieKey();
     this.saveTextAreaContent(key);
   },
 

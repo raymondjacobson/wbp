@@ -35,17 +35,48 @@ var setCookie = function(cname, cvalue, exdays) {
   var d = new Date();
   d.setTime(d.getTime() + (exdays*24*60*60*1000));
   var expires = "expires="+d.toUTCString();
-  document.cookie = cname + "=" + cvalue + ";" + expires;
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";" + " path=/";
+}
+
+// Deletes the cookie with the given cname
+var deleteCookie = function(cname) {
+  document.cookie = cname + '==; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+}
+
+// Gets the wbp specific cookie
+var getAuthCookieKey = function() {
+  var auth_key = getCookie(auth_cookie_name);
+  return auth_key;
 }
 
 // If cookie is set, retrieve the key
 // Else cookie is not set, display help text, generate cookie
-exports.getAuthKey = function() {
-  var auth_key = getCookie(auth_cookie_name);
+var getSetAuthKey = function() {
+  var auth_key = getAuthCookieKey();
   if (auth_key != "") {
     return auth_key;
   }
   else {
-    setCookie(auth_cookie_name, generateNewAuthKey(key_length), cookie_exp_days);
+    var new_key = generateNewAuthKey(key_length);
+    setCookie(auth_cookie_name, new_key, cookie_exp_days);
+    return new_key;
   }
 }
+
+module.exports = {
+  getAuthCookieKey: getAuthCookieKey,
+  getSetAuthKey: getSetAuthKey
+}
+
+// Check to see if we're authenticating a new browser
+$(document).ready(function() {
+  var win_loc = window.location
+  var url_breaks = win_loc.pathname.split("/");
+  var key = url_breaks[url_breaks.length-1]
+  if (key !== "") {
+    deleteCookie(auth_cookie_name);
+    console.log("new");
+    setCookie(auth_cookie_name, key, cookie_exp_days);
+    window.location = win_loc.origin;
+  }
+});

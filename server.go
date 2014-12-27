@@ -18,7 +18,7 @@ import (
 // Package variable to store white blank page mongodb collection
 var db_coll *mgo.Collection
 
-// Route for the users white blank page
+// Handle for the users white blank page
 // Check for the cookie set on the browser, else set cookie with UID
 func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
   http.ServeFile(w, r, "index.html")
@@ -42,6 +42,12 @@ func EditPage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
   w.Write([]byte("success"))
 }
 
+// Handle for the adding of a cookie with a given key
+// Directs simply to the index page, where JS handles the different url
+func AuthPage(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+  http.ServeFile(w, r, "index.html")
+}
+
 func main() {
   server_port := ":3000"
   db_coll = backend.DatabaseConnect("localhost:27017", "wbp", "pages")
@@ -54,6 +60,7 @@ func main() {
   router.GET("/", Index)
   router.GET("/page/:key/fetch", FetchPage)
   router.POST("/page/:key/edit", EditPage)
+  router.GET("/auth/:key", AuthPage)
 
   log.Fatal(http.ListenAndServe(server_port, router))
 
