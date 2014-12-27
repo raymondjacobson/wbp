@@ -5,7 +5,7 @@
  */
 
 //TODO Switch to non browser JSX transform before production
-var auth_cookie = require("./auth.js");
+var auth_cookie = require("./auth_cookie.js");
 var poll_interval = 2000;
 
 // React object for main text area on page
@@ -19,6 +19,7 @@ var TextArea = React.createClass({
       url: fetch_url,
       dataType: 'text',
       success: function(response) {
+        console.log("page get");
         this.setState({data: response});
       }.bind(this),
       error: function(xhr, status, err) {
@@ -33,7 +34,7 @@ var TextArea = React.createClass({
     var page_content = $("#main").val();
     $.ajax({
       url: edit_url,
-      dataType: 'json',
+      dataType: 'text',
       type: 'POST',
       data: page_content,
       success: function(response) {
@@ -53,10 +54,11 @@ var TextArea = React.createClass({
   componentDidMount: function() {
     var key = auth_cookie.getAuthKey();
     this.getTextAreaContent(key);
-    var saveTAC = this.saveTextAreaContent;
+    // Poll for update to text area content
+    var getTAC = this.getTextAreaContent;
     setInterval(function() {
-        saveTAC(key)
-      }, this.props.savePollInterval);
+        getTAC(key)
+      }, this.props.pollInterval);
     // Put the cursor at the end of the textarea
     // TODO: Better way to do this?
     var textarea = $("#main"),
@@ -67,21 +69,27 @@ var TextArea = React.createClass({
       .val(val);
   },
   handleChange: function(event) {
-    this.setState({data: event.target.value});
+    this.setState({data: event});
+    var key = auth_cookie.getAuthKey();
+    this.saveTextAreaContent(key);
   },
 
   // TODO: Keypress handlers
 
   // Render the text area, reactive data
   render: function() {
+    var valueLink = {
+      value: this.state.data,
+      requestChange: this.handleChange
+    };
     return (
-      <textarea id="main" value={this.state.data} onChange={this.handleChange}>
+      <textarea id="main" valueLink={valueLink}>
       </textarea>
     );
   }
 });
 
 React.render(
-  <TextArea url="/page/" savePollInterval={poll_interval} />,
+  <TextArea url="/page/" pollInterval={poll_interval} />,
   document.getElementById('content')
 );

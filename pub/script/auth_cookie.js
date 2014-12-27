@@ -40,7 +40,7 @@ var setCookie = function(cname, cvalue, exdays) {
 
 // If cookie is set, retrieve the key
 // Else cookie is not set, display help text, generate cookie
-exports.getAuthKey = function(exdays) {
+exports.getAuthKey = function() {
   var auth_key = getCookie(auth_cookie_name);
   if (auth_key != "") {
     return auth_key;

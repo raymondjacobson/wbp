@@ -30,7 +30,7 @@ func DatabaseConnect(server_url string, database_name string, collection_name st
   c := session.DB(database_name).C(collection_name)
   // Unique index assurance 
   index := mgo.Index{
-    Key: []string{"key", "content"},
+    Key: []string{"key"},
     Unique: true,
     DropDups: true,
   }

@@ -27,8 +27,6 @@ func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 // Query the mongo database using the user's auth key in ps
 // Render json data with the user's wbp
 func FetchPage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-  w.Header().Set("Content-Type", "application/json")
-  // TODO
   auth_key := ps.ByName("key")
   content_string := backend.GetPage(db_coll, auth_key)
   w.Write([]byte(content_string))
@@ -37,13 +35,11 @@ func FetchPage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 // Query the mongo database using the user's auth key in ps
 // Update the mongo database record for the user with the post data in ps
 func EditPage(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-  w.Header().Set("Content-Type", "application/json")
-  // TODO
   auth_key := ps.ByName("key")
   body, _ := ioutil.ReadAll(r.Body)
   page_string := string(body)
   backend.UpdatePage(db_coll, auth_key, page_string)
-  http.ServeFile(w, r, "sample.json")
+  w.Write([]byte("success"))
 }
 
 func main() {
