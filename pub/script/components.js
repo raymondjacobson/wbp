@@ -6,6 +6,7 @@
 
 //TODO Switch to non browser JSX transform before production
 var auth_cookie = require("./auth_cookie.js");
+var hotkey = require("./hotkey.js");
 var poll_interval = 2000;
 
 // React object for main text area on page
@@ -74,8 +75,6 @@ var TextArea = React.createClass({
     this.saveTextAreaContent(key);
   },
 
-  // TODO: Keypress handlers
-
   // Render the text area, reactive data
   render: function() {
     var valueLink = {
@@ -93,3 +92,8 @@ React.render(
   <TextArea url="/page/" pollInterval={poll_interval} />,
   document.getElementById('content')
 );
+
+$(document).ready(function() {
+  auth_cookie.handleNewBrowser();
+  hotkey.listenForKeys();
+});

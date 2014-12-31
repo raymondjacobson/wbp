@@ -64,13 +64,10 @@ var getSetAuthKey = function() {
   }
 }
 
-module.exports = {
-  getAuthCookieKey: getAuthCookieKey,
-  getSetAuthKey: getSetAuthKey
-}
-
 // Check to see if we're authenticating a new browser
-$(document).ready(function() {
+// If we are, we need to clear any possibly existing cookies
+// and set up a new cookie with the key provided by the URL
+var handleNewBrowser = function() {
   var win_loc = window.location
   var url_breaks = win_loc.pathname.split("/");
   var key = url_breaks[url_breaks.length-1]
@@ -80,7 +77,13 @@ $(document).ready(function() {
     setCookie(auth_cookie_name, key, cookie_exp_days);
     window.location = win_loc.origin;
   }
-});
+}
+
+module.exports = {
+  getAuthCookieKey: getAuthCookieKey,
+  getSetAuthKey: getSetAuthKey,
+  handleNewBrowser: handleNewBrowser
+}
 },{}],"/Users/raymond/code/whiteblankpage/pub/script/components.js":[function(require,module,exports){
 /**
  * White Blank Page
@@ -90,6 +93,7 @@ $(document).ready(function() {
 
 //TODO Switch to non browser JSX transform before production
 var auth_cookie = require("./auth_cookie.js");
+var hotkey = require("./hotkey.js");
 var poll_interval = 2000;
 
 // React object for main text area on page
@@ -158,8 +162,6 @@ var TextArea = React.createClass({
     this.saveTextAreaContent(key);
   },
 
-  // TODO: Keypress handlers
-
   // Render the text area, reactive data
   render: function() {
     var valueLink = {
@@ -177,4 +179,33 @@ React.render(
   <TextArea url="/page/" pollInterval={poll_interval} />,
   document.getElementById('content')
 );
-},{"./auth_cookie.js":"/Users/raymond/code/whiteblankpage/pub/script/auth_cookie.js"}]},{},["/Users/raymond/code/whiteblankpage/pub/script/components.js"]);
+
+$(document).ready(function() {
+  auth_cookie.handleNewBrowser();
+  hotkey.listenForKeys();
+});
+},{"./auth_cookie.js":"/Users/raymond/code/whiteblankpage/pub/script/auth_cookie.js","./hotkey.js":"/Users/raymond/code/whiteblankpage/pub/script/hotkey.js"}],"/Users/raymond/code/whiteblankpage/pub/script/hotkey.js":[function(require,module,exports){
+/**
+ * White Blank Page
+ * helpers.js
+ * Raymond Jacobson 2014
+ */
+
+// var Mousetrap = require('./mousetrap.min.js');
+
+var getTextFieldSelection = function(textField) {
+  return textField.value.substring(textField.selectionStart, textField.selectionEnd);
+}
+
+// Set up listeners
+var listenForKeys = function() {
+  Mousetrap.bind('esc', function() {
+      console.log("wow");
+      return false;
+  });
+}
+
+module.exports = {
+  listenForKeys: listenForKeys
+}
+},{}]},{},["/Users/raymond/code/whiteblankpage/pub/script/components.js"]);

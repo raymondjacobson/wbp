@@ -63,13 +63,10 @@ var getSetAuthKey = function() {
   }
 }
 
-module.exports = {
-  getAuthCookieKey: getAuthCookieKey,
-  getSetAuthKey: getSetAuthKey
-}
-
 // Check to see if we're authenticating a new browser
-$(document).ready(function() {
+// If we are, we need to clear any possibly existing cookies
+// and set up a new cookie with the key provided by the URL
+var handleNewBrowser = function() {
   var win_loc = window.location
   var url_breaks = win_loc.pathname.split("/");
   var key = url_breaks[url_breaks.length-1]
@@ -79,4 +76,10 @@ $(document).ready(function() {
     setCookie(auth_cookie_name, key, cookie_exp_days);
     window.location = win_loc.origin;
   }
-});
+}
+
+module.exports = {
+  getAuthCookieKey: getAuthCookieKey,
+  getSetAuthKey: getSetAuthKey,
+  handleNewBrowser: handleNewBrowser
+}
