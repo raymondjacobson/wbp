@@ -5,7 +5,9 @@
  */
 
 //TODO Switch to non browser JSX transform before production
+data_exchange_on = true;
 var auth_cookie = require("./auth_cookie.js");
+var hotkey = require("./hotkey.js");
 var poll_interval = 2000;
 
 // React object for main text area on page
@@ -20,7 +22,9 @@ var TextArea = React.createClass({
       dataType: 'text',
       success: function(response) {
         console.log("page get");
-        this.setState({data: response});
+        if (data_exchange_on) {
+          this.setState({data: response});
+        }
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -56,7 +60,7 @@ var TextArea = React.createClass({
     this.getTextAreaContent(key);
     // Poll for update to text area content
     var getTAC = this.getTextAreaContent;
-    setInterval(function() {
+    var getIntervalId = setInterval(function() {
         getTAC(key)
       }, this.props.pollInterval);
     // Put the cursor at the end of the textarea
@@ -73,8 +77,6 @@ var TextArea = React.createClass({
     var key = auth_cookie.getAuthCookieKey();
     this.saveTextAreaContent(key);
   },
-
-  // TODO: Keypress handlers
 
   // Render the text area, reactive data
   render: function() {
@@ -93,3 +95,8 @@ React.render(
   <TextArea url="/page/" pollInterval={poll_interval} />,
   document.getElementById('content')
 );
+
+$(document).ready(function() {
+  auth_cookie.handleNewBrowser();
+  hotkey.listenForKeys();
+});

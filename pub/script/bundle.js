@@ -64,13 +64,10 @@ var getSetAuthKey = function() {
   }
 }
 
-module.exports = {
-  getAuthCookieKey: getAuthCookieKey,
-  getSetAuthKey: getSetAuthKey
-}
-
 // Check to see if we're authenticating a new browser
-$(document).ready(function() {
+// If we are, we need to clear any possibly existing cookies
+// and set up a new cookie with the key provided by the URL
+var handleNewBrowser = function() {
   var win_loc = window.location
   var url_breaks = win_loc.pathname.split("/");
   var key = url_breaks[url_breaks.length-1]
@@ -80,7 +77,13 @@ $(document).ready(function() {
     setCookie(auth_cookie_name, key, cookie_exp_days);
     window.location = win_loc.origin;
   }
-});
+}
+
+module.exports = {
+  getAuthCookieKey: getAuthCookieKey,
+  getSetAuthKey: getSetAuthKey,
+  handleNewBrowser: handleNewBrowser
+}
 },{}],"/Users/raymond/code/whiteblankpage/pub/script/components.js":[function(require,module,exports){
 /**
  * White Blank Page
@@ -89,7 +92,9 @@ $(document).ready(function() {
  */
 
 //TODO Switch to non browser JSX transform before production
+data_exchange_on = true;
 var auth_cookie = require("./auth_cookie.js");
+var hotkey = require("./hotkey.js");
 var poll_interval = 2000;
 
 // React object for main text area on page
@@ -104,7 +109,9 @@ var TextArea = React.createClass({
       dataType: 'text',
       success: function(response) {
         console.log("page get");
-        this.setState({data: response});
+        if (data_exchange_on) {
+          this.setState({data: response});
+        }
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -140,7 +147,7 @@ var TextArea = React.createClass({
     this.getTextAreaContent(key);
     // Poll for update to text area content
     var getTAC = this.getTextAreaContent;
-    setInterval(function() {
+    var getIntervalId = setInterval(function() {
         getTAC(key)
       }, this.props.pollInterval);
     // Put the cursor at the end of the textarea
@@ -157,8 +164,6 @@ var TextArea = React.createClass({
     var key = auth_cookie.getAuthCookieKey();
     this.saveTextAreaContent(key);
   },
-
-  // TODO: Keypress handlers
 
   // Render the text area, reactive data
   render: function() {
@@ -177,4 +182,70 @@ React.render(
   <TextArea url="/page/" pollInterval={poll_interval} />,
   document.getElementById('content')
 );
-},{"./auth_cookie.js":"/Users/raymond/code/whiteblankpage/pub/script/auth_cookie.js"}]},{},["/Users/raymond/code/whiteblankpage/pub/script/components.js"]);
+
+$(document).ready(function() {
+  auth_cookie.handleNewBrowser();
+  hotkey.listenForKeys();
+});
+},{"./auth_cookie.js":"/Users/raymond/code/whiteblankpage/pub/script/auth_cookie.js","./hotkey.js":"/Users/raymond/code/whiteblankpage/pub/script/hotkey.js"}],"/Users/raymond/code/whiteblankpage/pub/script/hotkey.js":[function(require,module,exports){
+/**
+ * White Blank Page
+ * helpers.js
+ * Raymond Jacobson 2014
+ */
+
+var help_text = "Help.";
+var save_text_val;
+var help_text_on = false;
+
+var getTextFieldSelection = function(textField) {
+  var ta_val = textField.value;
+  return ta_val.substring(textField.selectionStart, textField.selectionEnd);
+}
+
+var showHideHelpText = function() {
+  if (!help_text_on) {
+    data_exchange_on = false;
+    help_text_on = true;
+    save_text_val = $("textarea")[0].value;
+    $("textarea")[0].value = help_text;
+  }
+  else {
+    help_text_on = false;
+    $("textarea")[0].value = save_text_val;
+    data_exchange_on = true;
+  }
+}
+
+// Set up listeners
+var listenForKeys = function() {
+  $(window).keydown(function(e) {
+    /* Accept a possible set of hotkeys */
+    var valid_keys = ['¿', 'E'];
+    var key = String.fromCharCode(e.keyCode);
+    if (valid_keys.indexOf(key) != -1) {
+      if (e.metaKey) {
+        e.preventDefault();
+        /* Determine appropriate action */
+        switch(String.fromCharCode(e.keyCode)) {
+          case '¿':
+            console.log("help");
+            showHideHelpText();
+            break;
+          case 'E':
+            console.log("email");
+            console.log(getTextFieldSelection($("textarea")[0]))
+            break;
+          default:
+            console.log("Invalid command.");
+            break;
+        }
+      }
+    }
+  });
+}
+
+module.exports = {
+  listenForKeys: listenForKeys
+}
+},{}]},{},["/Users/raymond/code/whiteblankpage/pub/script/components.js"]);
