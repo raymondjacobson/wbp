@@ -8,7 +8,7 @@ body {
   font-size: 13px;
 }
 textarea#main {
-  height: 50%;
+  height: 100%;
   width: 100%;
   border: none;
   outline: none;

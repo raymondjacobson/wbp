@@ -4,7 +4,44 @@
  * Raymond Jacobson 2014
  */
 
-var help_text = "Help.";
+function hereDoc(f) {
+  return f.toString().
+      replace(/^[^\/]+\/\*!?/, '').
+      replace(/\*\/[^\/]+$/, '');
+}
+
+var help_text = hereDoc(function() {/*!
+Welcome to White Blank Page.
+
+This is a minamalistic notetaking application.
+
+Too much in life do we get bogged down with
+managing many accounts,
+complex user interfaces,
+and bloated functionality.
+
+Write what you need to write here and it will be here when you come back.
+
+Useful hotkeys (mac only, PC get out):
+
+⌘ + / : Display this message again. Pressing it a subsequent time makes it go away.
+⌘ + E : Type out and highlight an email address, press the hotkey, and an email
+        with a link to the note will be sent to the email address highlighted
+        (use this to authenticate new devices, browsers, etc.)
+⌘ + T : Automatically inserts today's date at the cursor position.
+⌘ + S : Share this page with someone. Link copied to clipboard. They won't be able to edit.
+⌘ + D : Download the current note as a .txt
+
+Now that you've learned what to do, delete this message, and get on with your life.
+
+
+
+
+
+Project built with <3 by @raymondjacobson
+https://github.com/raymondjacobson/wbp
+*/});
+
 var save_text_val;
 var help_text_on = false;
 
@@ -31,7 +68,7 @@ var showHideHelpText = function() {
 var listenForKeys = function() {
   $(window).keydown(function(e) {
     /* Accept a possible set of hotkeys */
-    var valid_keys = ['¿', 'E'];
+    var valid_keys = ['¿', 'E', 'T', 'S', 'D'];
     var key = String.fromCharCode(e.keyCode);
     if (valid_keys.indexOf(key) != -1) {
       if (e.metaKey) {
