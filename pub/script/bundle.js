@@ -95,7 +95,7 @@ module.exports = {
 data_exchange_on = true;
 var auth_cookie = require("./auth_cookie.js");
 var hotkey = require("./hotkey.js");
-var poll_interval = 2000;
+var poll_interval = 200;
 
 // React object for main text area on page
 var TextArea = React.createClass({
@@ -111,6 +111,10 @@ var TextArea = React.createClass({
         console.log("page get");
         if (data_exchange_on) {
           this.setState({data: response});
+        //   if (response != "") this.setState({data: response});
+        //   else {
+        //     this.setState({data: hotkey.help_text});
+        //   }
         }
       }.bind(this),
       error: function(xhr, status, err) {
@@ -160,9 +164,11 @@ var TextArea = React.createClass({
       .val(val);
   },
   handleChange: function(event) {
-    this.setState({data: event});
-    var key = auth_cookie.getAuthCookieKey();
-    this.saveTextAreaContent(key);
+    if (data_exchange_on) {
+      this.setState({data: event});
+      var key = auth_cookie.getAuthCookieKey();
+      this.saveTextAreaContent(key);
+    }
   },
 
   // Render the text area, reactive data
@@ -222,8 +228,9 @@ Useful hotkeys (mac only, PC get out):
 ⌘ + S : Share this page with someone. Link copied to clipboard. They won't be able to edit.
 ⌘ + D : Download the current note as a .txt
 
-Now that you've learned what to do, delete this message, and get on with your life.
+Now that you've learned what to do, ⌘ + / to start, and get on with your life.
 
+P.S. Refrain from putting critical & sensitive information (SSN, phone, personal information, etc.) here for security reasons.
 
 
 
@@ -246,10 +253,13 @@ var showHideHelpText = function() {
     help_text_on = true;
     save_text_val = $("textarea")[0].value;
     $("textarea")[0].value = help_text;
+    $("textarea")[0].disabled = true;
   }
   else {
     help_text_on = false;
     $("textarea")[0].value = save_text_val;
+    $("textarea")[0].disabled = false;
+    $("textarea")[0].focus();
     data_exchange_on = true;
   }
 }
@@ -283,6 +293,7 @@ var listenForKeys = function() {
 }
 
 module.exports = {
+  help_text: help_text,
   listenForKeys: listenForKeys
 }
 },{}]},{},["/Users/raymond/code/whiteblankpage/pub/script/components.js"]);

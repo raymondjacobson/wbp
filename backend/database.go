@@ -10,7 +10,6 @@ import (
   "fmt"
   "log"
   "gopkg.in/mgo.v2"
-  // "reflect"
   "gopkg.in/mgo.v2/bson"
 )
 
@@ -56,7 +55,8 @@ func GetPage(c *mgo.Collection, key string) string {
   current_user := User{}
   err := c.Find(bson.M{"key": key}).One(&current_user)
   if err != nil { // TODO: Should be a better err check
-    UpdatePage(c, key, "")
+    initial_text := "Press ⌘ + / to get started\n\n"
+    UpdatePage(c, key, initial_text)
     return ""
   }
   fmt.Println(key + " fetched")

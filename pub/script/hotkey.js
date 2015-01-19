@@ -32,8 +32,9 @@ Useful hotkeys (mac only, PC get out):
 ⌘ + S : Share this page with someone. Link copied to clipboard. They won't be able to edit.
 ⌘ + D : Download the current note as a .txt
 
-Now that you've learned what to do, delete this message, and get on with your life.
+Now that you've learned what to do, ⌘ + / to start, and get on with your life.
 
+P.S. Refrain from putting critical & sensitive information (SSN, phone, personal information, etc.) here for security reasons.
 
 
 
@@ -56,10 +57,13 @@ var showHideHelpText = function() {
     help_text_on = true;
     save_text_val = $("textarea")[0].value;
     $("textarea")[0].value = help_text;
+    $("textarea")[0].disabled = true;
   }
   else {
     help_text_on = false;
     $("textarea")[0].value = save_text_val;
+    $("textarea")[0].disabled = false;
+    $("textarea")[0].focus();
     data_exchange_on = true;
   }
 }
@@ -93,5 +97,6 @@ var listenForKeys = function() {
 }
 
 module.exports = {
+  help_text: help_text,
   listenForKeys: listenForKeys
 }

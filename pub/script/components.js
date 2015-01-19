@@ -8,7 +8,7 @@
 data_exchange_on = true;
 var auth_cookie = require("./auth_cookie.js");
 var hotkey = require("./hotkey.js");
-var poll_interval = 2000;
+var poll_interval = 200;
 
 // React object for main text area on page
 var TextArea = React.createClass({
@@ -24,6 +24,10 @@ var TextArea = React.createClass({
         console.log("page get");
         if (data_exchange_on) {
           this.setState({data: response});
+        //   if (response != "") this.setState({data: response});
+        //   else {
+        //     this.setState({data: hotkey.help_text});
+        //   }
         }
       }.bind(this),
       error: function(xhr, status, err) {
@@ -73,9 +77,11 @@ var TextArea = React.createClass({
       .val(val);
   },
   handleChange: function(event) {
-    this.setState({data: event});
-    var key = auth_cookie.getAuthCookieKey();
-    this.saveTextAreaContent(key);
+    if (data_exchange_on) {
+      this.setState({data: event});
+      var key = auth_cookie.getAuthCookieKey();
+      this.saveTextAreaContent(key);
+    }
   },
 
   // Render the text area, reactive data
