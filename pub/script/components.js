@@ -24,10 +24,6 @@ var TextArea = React.createClass({
         console.log("page get");
         if (data_exchange_on) {
           this.setState({data: response});
-        //   if (response != "") this.setState({data: response});
-        //   else {
-        //     this.setState({data: hotkey.help_text});
-        //   }
         }
       }.bind(this),
       error: function(xhr, status, err) {
@@ -35,6 +31,7 @@ var TextArea = React.createClass({
       }.bind(this)
     });
   },
+
   // Edit data (via polling)
   // TODO: complicated based on typing rate (or something)
   saveTextAreaContent: function(key) {
@@ -53,6 +50,72 @@ var TextArea = React.createClass({
       }.bind(this)
     });
   },
+
+  // Properly checks to see if sync is on and sets the data state
+  // Retrieves auth key and saves based on key
+  syncData: function(data) {
+    if (data_exchange_on) {
+      this.setState({data: data});
+      var key = auth_cookie.getAuthCookieKey();
+      this.saveTextAreaContent(key);
+    }
+  },
+
+  // Set up keybinding listeners
+  listenForKeys: function() {
+    var TextArea = this;
+    $(window).keydown(function(e) {
+      /* Accept a possible set of hotkeys */
+      var valid_keys = ['¿', 'E', 'I', 'S', 'D'];
+      var key = String.fromCharCode(e.keyCode);
+      if (valid_keys.indexOf(key) != -1) {
+        if (e.metaKey) {
+          e.preventDefault();
+          /* Determine appropriate action */
+          switch(String.fromCharCode(e.keyCode)) {
+            case '¿': // Help text
+              console.log("help");
+              hotkey.showHideHelpText();
+              break;
+            case 'E': // Email note link
+              console.log("email");
+              console.log(hotkey.getTextFieldSelection($("textarea")[0]))
+              break;
+            case 'I': // Insert today's date
+              var d = new Date();
+              var day = d.getDate()
+                , month = d.getMonth() + 1
+                , year = d.getYear() - 100
+                , dow = hotkey.getWeekday(d.getDay());
+              var ta = $("textarea")[0];
+              var ta_val = ta.value;
+              var ta_start = ta.selectionStart;
+              var date_string = dow+" "+day+"/"+month+"/"+year;
+              var new_data = ta_val.substring(0, ta_start) + date_string
+                + ta_val.substring(ta.selectionStart, ta_val.length);
+              TextArea.syncData(new_data);
+              hotkey.setCaretToPos(ta, ta_start + date_string.length);
+              break;
+            case 'S': // Share the note with someone
+              break;
+            case 'D': // Download the current note as .txt
+              var content = $("textarea")[0].value;
+              var d = new Date();
+              var day = d.getDate()
+                , month = d.getMonth() + 1
+                , year = d.getYear() - 100
+                , dow = hotkey.getWeekday(d.getDay());
+              hotkey.downloadFile("page_on_"+day+"."+month+"."+year+".txt", content);
+              break;
+            default:
+              console.log("Invalid command.");
+              break;
+          }
+        }
+      }
+    });
+  },
+
   // Default is an empty page if there was a React issue
   getInitialState: function() {
     return {data: ""};
@@ -75,13 +138,12 @@ var TextArea = React.createClass({
       .focus()
       .val("")
       .val(val);
+    this.listenForKeys();
   },
+
+  // The event represents the keystroke character
   handleChange: function(event) {
-    if (data_exchange_on) {
-      this.setState({data: event});
-      var key = auth_cookie.getAuthCookieKey();
-      this.saveTextAreaContent(key);
-    }
+    this.syncData(event);
   },
 
   // Render the text area, reactive data
@@ -104,5 +166,4 @@ React.render(
 
 $(document).ready(function() {
   auth_cookie.handleNewBrowser();
-  hotkey.listenForKeys();
 });

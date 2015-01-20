@@ -55,7 +55,7 @@ func GetPage(c *mgo.Collection, key string) string {
   current_user := User{}
   err := c.Find(bson.M{"key": key}).One(&current_user)
   if err != nil { // TODO: Should be a better err check
-    initial_text := "This is your page.\n\nPress ⌘ + / for help\n\n"
+    initial_text := "This is your page.\n\nPress ⌘/ for help\n\n"
     UpdatePage(c, key, initial_text)
     return ""
   }
