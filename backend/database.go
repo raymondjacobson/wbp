@@ -1,7 +1,7 @@
 /**
  * White Blank Page
  * database.go
- * Raymond Jacobson 2014
+ * Raymond Jacobson 2015
  */
 
 package backend
@@ -11,6 +11,7 @@ import (
   "log"
   "gopkg.in/mgo.v2"
   "gopkg.in/mgo.v2/bson"
+  "time"
 )
 
 // Primary user type
@@ -50,7 +51,7 @@ func UpdatePage(c *mgo.Collection, key string, content string) {
   // fmt.Println(key + " updated")
 }
 
-// Retrieve & 
+// Retrieve & update
 func GetPage(c *mgo.Collection, key string) string {
   current_user := User{}
   err := c.Find(bson.M{"key": key}).One(&current_user)
@@ -61,4 +62,21 @@ func GetPage(c *mgo.Collection, key string) string {
   }
   // fmt.Println(key + " fetched")
   return current_user.Content
+}
+
+// Check if our database has a temp key for reauth
+// If not, add one and return it
+// Set time.After to destroy the reauth key after t=5 minutes
+func GetReauthKey(c *mgo.Collection, key string) string {
+  
+}
+
+// Deletes the given reauth key for a page with key
+func DeleteReauthKey(key string) {
+
+}
+
+// Uses a temp key to find the actual key of someone's record & returns
+func GetActualKeyFromTemp(c *mgo.Collcetion, temp_key string) string {
+
 }

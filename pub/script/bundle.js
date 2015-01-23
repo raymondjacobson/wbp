@@ -2,7 +2,7 @@
 /**
  * White Blank Page
  * auth_cookie.js
- * Raymond Jacobson 2014
+ * Raymond Jacobson 2015
  */
 
 // Constants
@@ -64,6 +64,12 @@ var getSetAuthKey = function() {
   }
 }
 
+// Set up the cookie for a reauth. Just delete whatever cookie is there and renew
+var forceNewAuth = function(auth_key) {
+  deleteCookie(auth_cookie_name);
+  setCookie(auth_cookie_name, auth_key, cookie_exp_days);
+}
+
 // Check to see if we're authenticating a new browser
 // If we are, we need to clear any possibly existing cookies
 // and set up a new cookie with the key provided by the URL
@@ -80,6 +86,7 @@ var handleNewBrowser = function() {
 }
 
 module.exports = {
+  forceNewAuth: forceNewAuth,
   getAuthCookieKey: getAuthCookieKey,
   getSetAuthKey: getSetAuthKey,
   handleNewBrowser: handleNewBrowser
@@ -88,7 +95,7 @@ module.exports = {
 /**
  * White Blank Page
  * components.js
- * Raymond Jacobson 2014
+ * Raymond Jacobson 2015
  */
 
 //TODO Switch to non browser JSX transform before production
@@ -165,8 +172,11 @@ var TextArea = React.createClass({
               hotkey.showHideHelpText();
               break;
             case 'E': // Email note link
-              console.log("email");
-              console.log(hotkey.getTextFieldSelection($("textarea")[0]))
+              var email_address = hotkey.getTextFieldSelection($("textarea")[0]);
+              var send_email_url = "/sendemail/" + email_address +
+                "/" + auth_cookie.getAuthCookieKey();
+              console.log(send_email_url)
+              $.get(send_email_url);
               break;
             case 'I': // Insert today's date
               var d = new Date();
@@ -258,7 +268,7 @@ $(document).ready(function() {
 /**
  * White Blank Page
  * helpers.js
- * Raymond Jacobson 2014
+ * Raymond Jacobson 2015
  */
 
 var save_text_val;

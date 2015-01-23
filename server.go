@@ -1,7 +1,7 @@
 /**
  * White Blank Page
  * server.go
- * Raymond Jacobson 2014
+ * Raymond Jacobson 2015
  */
 
 package main
@@ -13,6 +13,7 @@ import (
   "net/http"
   "log"
   "./backend"
+  "fmt"
 )
 
 // Package variable to store white blank page mongodb collection
@@ -48,6 +49,30 @@ func AuthPage(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
   http.ServeFile(w, r, "index.html")
 }
 
+// Handle for sending an email out to reauthorize account
+// Post data in ps contains the auth key needed
+func SendEmail(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+  to_address := ps.ByName("address")
+  auth_key := ps.ByName("key")
+  fmt.Println(to_address, auth_key)
+  temp_key := database.GetReauthKey(auth_key)
+  host_url := r.RequestURI["Host"]
+  backend.EmailReAuthLink(to_address, temp_key, host_url)
+}
+
+// Handle for page that sets up a new key on an email account
+// Recovers the actual key from the temp_key given and sends along to the template
+func ReAuth(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+  http.ServeFile(w, r, "reauth.html");
+}
+
+// Handle for silent route to get actual auth key from temp auth key
+func TempToActualKey(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+  temp_key := ps.ByName("temp_key")
+  auth_key := database.GetActualKeyFromTemp(temp_key)
+  w.Write([]byte(auth_key))
+}
+
 func main() {
   server_port := ":3000"
   db_coll = backend.DatabaseConnect("localhost:27017", "wbp", "pages")
@@ -61,6 +86,9 @@ func main() {
   router.GET("/page/:key/fetch", FetchPage)
   router.POST("/page/:key/edit", EditPage)
   router.GET("/auth/:key", AuthPage)
+  router.GET("/sendemail/:address/:key", SendEmail)
+  router.GET("/reauth/:temp_key", ReAuth)
+  router.GET("/keychange/:temp_key", TempToActualKey)
 
   log.Fatal(http.ListenAndServe(server_port, router))
 

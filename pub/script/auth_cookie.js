@@ -1,7 +1,7 @@
 /**
  * White Blank Page
  * auth_cookie.js
- * Raymond Jacobson 2014
+ * Raymond Jacobson 2015
  */
 
 // Constants
@@ -63,6 +63,12 @@ var getSetAuthKey = function() {
   }
 }
 
+// Set up the cookie for a reauth. Just delete whatever cookie is there and renew
+var forceNewAuth = function(auth_key) {
+  deleteCookie(auth_cookie_name);
+  setCookie(auth_cookie_name, auth_key, cookie_exp_days);
+}
+
 // Check to see if we're authenticating a new browser
 // If we are, we need to clear any possibly existing cookies
 // and set up a new cookie with the key provided by the URL
@@ -79,6 +85,7 @@ var handleNewBrowser = function() {
 }
 
 module.exports = {
+  forceNewAuth: forceNewAuth,
   getAuthCookieKey: getAuthCookieKey,
   getSetAuthKey: getSetAuthKey,
   handleNewBrowser: handleNewBrowser

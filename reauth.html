@@ -1,0 +1,25 @@
+<!-- White Blank Page
+     reauth.html
+     Raymond Jacobson 2015 -->
+
+<html>
+  <head>
+    <title>White Blank Page</title>
+    <link rel="icon" type="image/x-icon" href="/pub/favicon.ico">
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="/pub/script/auth_cookie.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        // Set cookie to the browser with the appropriate key
+        var keychange_url = window.location.href.replace("reauth", "keychange");
+        $.get(keychange, function(data) {
+          auth_cookie.forceNewAuth(data);
+        });
+        // Set the window location to the root so the user can see their page
+        window.location = "/";
+      });
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

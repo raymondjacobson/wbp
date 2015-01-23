@@ -1,7 +1,7 @@
 /**
  * White Blank Page
  * helpers.js
- * Raymond Jacobson 2014
+ * Raymond Jacobson 2015
  */
 
 var save_text_val;

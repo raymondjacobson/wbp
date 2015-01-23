@@ -1,7 +1,7 @@
 /**
  * White Blank Page
  * components.js
- * Raymond Jacobson 2014
+ * Raymond Jacobson 2015
  */
 
 //TODO Switch to non browser JSX transform before production
@@ -78,8 +78,11 @@ var TextArea = React.createClass({
               hotkey.showHideHelpText();
               break;
             case 'E': // Email note link
-              console.log("email");
-              console.log(hotkey.getTextFieldSelection($("textarea")[0]))
+              var email_address = hotkey.getTextFieldSelection($("textarea")[0]);
+              var send_email_url = "/sendemail/" + email_address +
+                "/" + auth_cookie.getAuthCookieKey();
+              console.log(send_email_url);
+              $.get(send_email_url);
               break;
             case 'I': // Insert today's date
               var d = new Date();
